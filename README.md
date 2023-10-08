@@ -24,3 +24,5 @@ Go to the localhost which is running or Ctrl+Click on the URL shown in terminal.
 For the PPT:- You can find it in the Repo named as Climate Change PPT.pptx
 
 or you can find on https://www.canva.com/design/DAFwpkfpph4/qc_z9upngOqIhKK1IhHmBQ/edit?utm_content=DAFwpkfpph4&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+The video is also been uploaded to the Repo named as:- FINAL VIDEO OF PROTOTYPE.mp4
