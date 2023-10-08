@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/CrowdFunding.sol": {
+      "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.9;\r\n\r\n\r\n\r\nerror CrowdFunding__DeadlineShouldBeInTheFuture();\r\nerror CrowdFunding__DonationNotSuccessFully();\r\nerror CrowdFunding__PleaseSendEnough();\r\n\r\ncontract CrowdFunding {\r\n    struct Campaign {\r\n        address owner;\r\n        string title;\r\n        string description;\r\n        uint256 target;\r\n        uint256 deadline;\r\n        uint256 amountCollected;\r\n        string image;\r\n        address[] donators;\r\n        uint256[] donations;\r\n    }\r\n\r\n    mapping(uint256 => Campaign) public campaigns;\r\n\r\n    uint256 public campaignId = 0;\r\n\r\n    event CampaignCreated(\r\n        address indexed _owner,\r\n        string _title,\r\n        string _description,\r\n        uint256 _target,\r\n        uint256 _deadline,\r\n        string _image\r\n    );\r\n\r\n    function createCampaign(\r\n        // address _owner,\r\n        string memory _title,\r\n        string memory _description,\r\n        uint256 _target,\r\n        uint256 _deadline,\r\n        string memory _image\r\n    ) public  {\r\n        Campaign storage campaign = campaigns[campaignId];\r\n\r\n        if (_deadline < block.timestamp) {\r\n            revert CrowdFunding__DeadlineShouldBeInTheFuture();\r\n        }\r\n        campaign.owner = msg.sender;\r\n        campaign.title = _title;\r\n        campaign.description = _description;\r\n        campaign.target = _target;\r\n        campaign.deadline = _deadline;\r\n        campaign.image = _image;\r\n\r\n        campaignId++;\r\n\r\n        emit CampaignCreated(\r\n            msg.sender,\r\n            _title,\r\n            _description,\r\n            _target,\r\n            _deadline,\r\n            _image\r\n        );\r\n    }\r\n\r\n    function donateToCampaign(uint256 _id) public payable {\r\n        if (msg.value <= 0) {\r\n            revert CrowdFunding__PleaseSendEnough();\r\n        }\r\n        uint256 amount = msg.value;\r\n        Campaign storage campaign = campaigns[_id];\r\n\r\n        (bool sent, ) = payable(campaign.owner).call{value: amount}(\"\");\r\n        if (sent) {\r\n            campaign.donators.push(msg.sender);\r\n            campaign.donations.push(amount);\r\n            campaign.amountCollected = campaign.amountCollected + amount;\r\n        } else {\r\n            revert CrowdFunding__DonationNotSuccessFully();\r\n        }\r\n    }\r\n\r\n    function getDonators(\r\n        uint256 _id\r\n    ) public view returns (address[] memory, uint256[] memory) {\r\n        return (campaigns[_id].donators, campaigns[_id].donations);\r\n    }\r\n\r\n    function getCampaigns() public view returns (Campaign[] memory) {\r\n        Campaign[] memory allCampaigns = new Campaign[](campaignId);\r\n\r\n        for (uint i = 0; i < campaignId; i++) {\r\n            Campaign storage item = campaigns[i];\r\n\r\n            allCampaigns[i] = item;\r\n        }\r\n        return allCampaigns;\r\n    }\r\n}\r\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
